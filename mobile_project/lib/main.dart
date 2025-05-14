@@ -1,0 +1,22 @@
+import 'package:flutter/material.dart';
+import 'package:mobile_project/screens/product_list_screen.dart';
+import 'screens/store_list_screen.dart';
+import 'screens/product_list_screen.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Stores App',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.indigo,
+      ),
+      home: ProductListScreen(),
+    );
+  }
+}
