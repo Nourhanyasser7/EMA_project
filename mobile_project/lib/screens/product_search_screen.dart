@@ -26,7 +26,7 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
   }
 
   void _fetchAllProducts() async {
-    final products = await _apiService.fetchAllProducts();
+    final products = await _apiService.getAllProducts();
     setState(() {
       allProducts = products;
     });
