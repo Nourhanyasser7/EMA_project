@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import '../models/store.dart';
 import '../services/api_service.dart';

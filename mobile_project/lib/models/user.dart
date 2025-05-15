@@ -1,4 +1,3 @@
-import 'package:meta/meta.dart';
 import 'dart:convert';
 
 Users usersFromMap(String str) => Users.fromMap(json.decode(str));

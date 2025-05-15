@@ -4,6 +4,8 @@ import '../state_management/store_bloc.dart';
 import 'product_list_screen.dart';
 
 class StoreListScreen extends StatefulWidget {
+  const StoreListScreen({super.key});
+
   @override
   _StoreListScreenState createState() => _StoreListScreenState();
 }

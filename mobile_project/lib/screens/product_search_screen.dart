@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_map_math/flutter_geo_math.dart';
+import 'package:mobile_project/screens/product_map_screen.dart';
 import '../models/product.dart';
 import '../models/store.dart';
 import '../services/api_service.dart';
 
 class ProductSearchScreen extends StatefulWidget {
+  const ProductSearchScreen({super.key});
+
   @override
   _ProductSearchScreenState createState() => _ProductSearchScreenState();
 }
@@ -126,6 +129,26 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
               },
             ),
             SizedBox(height: 20),
+            
+            ElevatedButton.icon(
+              icon: Icon(Icons.map),
+              label: Text("View as Map"),
+              onPressed: () {
+                if (matchingStores.isNotEmpty) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProductMapScreen(stores: matchingStores),
+                    ),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Please select a product with results first.")),
+                  );
+                }
+              },
+            ),
+
             Expanded(
               child: ListView.builder(
                 itemCount: matchingStores.length,

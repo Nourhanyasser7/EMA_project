@@ -61,7 +61,7 @@ class ApiService {
       }
     } catch (e) {
       print('Error fetching store details: $e');
-      throw e;  // Re-throw to be caught in the screen
+      rethrow;  // Re-throw to be caught in the screen
     }
   
   }
