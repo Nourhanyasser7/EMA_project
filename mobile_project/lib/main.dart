@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mobile_project/screens/product_list_screen.dart';
 import 'screens/store_list_screen.dart';
 import 'screens/product_list_screen.dart';
+import 'screens/product_search_screen.dart';
+
 
 void main() {
   runApp(MyApp());
@@ -16,7 +18,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.indigo,
       ),
-      home: ProductListScreen(),
+      home: ProductSearchScreen(),
     );
   }
 }
