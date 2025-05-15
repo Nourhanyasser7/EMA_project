@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
 import '../models/store.dart';
-import '../state_management/store_bloc.dart';
+import '../state_management/StoreManager.dart';
 import 'product_list_screen.dart';
 
+// A screen to displays a list of stores (restaurants and cafés)
 class StoreListScreen extends StatefulWidget {
-  const StoreListScreen({super.key});
-
   @override
   _StoreListScreenState createState() => _StoreListScreenState();
 }
 
 class _StoreListScreenState extends State<StoreListScreen> {
-  final StoreBloc _storeBloc = StoreBloc();
+  final StoreManager storemanager = StoreManager();
 
   @override
   void initState() {
     super.initState();
-    _storeBloc.fetchStores();
+    // Fetch the list of stores when the screen is initialized
+    storemanager.getStores();
   }
 
   @override
   void dispose() {
-    _storeBloc.dispose();
+    storemanager.dispose(); // Clean up stream when screen is disposed
     super.dispose();
   }
 
@@ -51,8 +51,9 @@ class _StoreListScreenState extends State<StoreListScreen> {
             fit: BoxFit.cover,
           ),
         ),
+        // Listen to the stream of store data and rebuild UI when it changes
         child: StreamBuilder<List<Store>>(
-          stream: _storeBloc.storesStream,
+          stream: storemanager.storesStream,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               final stores = snapshot.data!;
@@ -86,22 +87,16 @@ class _StoreListScreenState extends State<StoreListScreen> {
                             color: Color.fromARGB(255, 90, 120, 140),
                           ),
                         ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ProductListScreen(),
-                            ),
-                          );
-                        },
                       ),
                     ),
                   );
                 },
               );
             } else if (snapshot.hasError) {
+              // Show error message if fetching data failed
               return const Center(child: Text('Error loading stores'));
             } else {
+              // Show a loading spinner while data is being fetched
               return const Center(child: CircularProgressIndicator());
             }
           },
