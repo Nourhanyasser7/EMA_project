@@ -52,7 +52,10 @@ class _SignupScreenState extends State<SignupScreen> {
           ),
         );
 
-        Navigator.pop(context);
+         Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => LoginScreen()),
+      );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
