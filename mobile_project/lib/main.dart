@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_project/screens/product_list_screen.dart';
 import 'package:mobile_project/screens/signup_screen.dart';
+import 'package:mobile_project/screens/welcome.dart';
 import 'screens/store_list_screen.dart';
 import 'screens/product_list_screen.dart';
 import 'screens/product_search_screen.dart';
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.indigo,
       ),
-      home: SignupScreen(),
+      home: WelcomeScreen(),
     );
   }
 }

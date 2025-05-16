@@ -72,15 +72,12 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                     child: const CircleAvatar(
                       radius: 70,
                       backgroundColor: primaryColor,
-                      // child: Text(
-                      //   "🛬", // Replace with initials or logo
-                      //   style: TextStyle(fontSize: 70),
-                      // ),
+                     
                       child: Icon(
-  Icons.rocket_launch, 
-  size: 70, 
-  color: Colors.white, // Change to match your theme
-),
+                          Icons.store, 
+                          size: 70, 
+                           color: Colors.white, // Change to match your theme
+                      ),
                     ),
                   ),
 
