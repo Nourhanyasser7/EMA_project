@@ -11,7 +11,6 @@ class ProductMapScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // If no stores, center on (0,0)
     if (stores.isEmpty) {
       return Scaffold(
         appBar: AppBar(title: const Text("Stores Map View")),
@@ -19,17 +18,33 @@ class ProductMapScreen extends StatelessWidget {
       );
     }
 
-    // Compute LatLngBounds to include all store locations
-    final bounds = LatLngBounds(
-      LatLng(stores[0].latitude, stores[0].longitude),
-      LatLng(stores[0].latitude, stores[0].longitude),
-    );
-    for (var store in stores) {
-      bounds.extend(LatLng(store.latitude, store.longitude));
+    // Create base bounds from first store
+    LatLng sw = LatLng(stores[0].latitude, stores[0].longitude);
+    LatLng ne = LatLng(stores[0].latitude, stores[0].longitude);
+
+    if (stores.length == 1) {
+      // Artificially expand the bounds if there's only one store
+      final offset = 1.0; // degree
+      sw = LatLng(stores[0].latitude - offset, stores[0].longitude - offset);
+      ne = LatLng(stores[0].latitude + offset, stores[0].longitude + offset);
+    } else {
+      for (var store in stores) {
+        final point = LatLng(store.latitude, store.longitude);
+        if (point.latitude < sw.latitude) sw = LatLng(point.latitude, sw.longitude);
+        if (point.longitude < sw.longitude) sw = LatLng(sw.latitude, point.longitude);
+        if (point.latitude > ne.latitude) ne = LatLng(point.latitude, ne.longitude);
+        if (point.longitude > ne.longitude) ne = LatLng(ne.latitude, point.longitude);
+      }
     }
 
+    final bounds = LatLngBounds(sw, ne);
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Stores Map View")),
+      appBar: AppBar(
+        title: const Text("Stores Map View"),
+        centerTitle: true,
+        elevation: 2,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Card(
@@ -54,14 +69,14 @@ class ProductMapScreen extends StatelessWidget {
                     width: 80,
                     height: 80,
                     point: LatLng(store.latitude, store.longitude),
-                    child:  Column(
+                    child: Column(
                       children: [
                         const Icon(Icons.location_pin, color: Colors.red, size: 36),
                         Container(
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.9),
                             borderRadius: BorderRadius.circular(6),
-                            boxShadow: [
+                            boxShadow: const [
                               BoxShadow(
                                 color: Colors.black26,
                                 blurRadius: 4,

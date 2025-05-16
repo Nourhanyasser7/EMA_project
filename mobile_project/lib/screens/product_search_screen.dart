@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_map_math/flutter_geo_math.dart';
@@ -26,7 +27,7 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
   }
 
   void _fetchAllProducts() async {
-    final products = await _apiService.getAllProducts();
+    final products = await _apiService.fetchAllProducts();
     setState(() {
       allProducts = products;
     });
@@ -105,70 +106,100 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    const Color primaryColor = Color.fromARGB(255, 89, 136, 170);
     return Scaffold(
-      appBar: AppBar(title: Text("Search by Product")),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            DropdownButton<Product>(
-              value: selectedProduct,
-              hint: Text('Select a product'),
-              isExpanded: true,
-              items: allProducts.map((Product product) {
-                return DropdownMenuItem<Product>(
-                  value: product,
-                  child: Text(product.name),
-                );
-              }).toList(),
-              onChanged: (Product? newValue) {
-                setState(() {
-                  selectedProduct = newValue;
-                });
-                _searchStoresByProduct(newValue!.name);
-              },
-            ),
-            SizedBox(height: 20),
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        title: const Text(
+          'Search By Product',
+          style: TextStyle(
+            fontSize: 27,
+            fontWeight: FontWeight.bold,
+            color: primaryColor,
             
-            ElevatedButton.icon(
-              icon: Icon(Icons.map),
-              label: Text("View as Map"),
-              onPressed: () {
-                if (matchingStores.isNotEmpty) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ProductMapScreen(stores: matchingStores),
+          ),
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+      ),
+            body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset(
+            "assets/background.jpg",
+            fit: BoxFit.cover,
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  const SizedBox(height: 20), // Moves the dropdown lower
+                  DropdownButton<Product>(
+                    value: selectedProduct,
+                    hint: const Text('Select a product'),
+                    isExpanded: true,
+                    dropdownColor: Colors.white,
+                    items: allProducts.map((Product product) {
+                      return DropdownMenuItem<Product>(
+                        value: product,
+                        child: Text(product.name),
+                      );
+                    }).toList(),
+                    onChanged: (Product? newValue) {
+                      setState(() {
+                        selectedProduct = newValue;
+                      });
+                      _searchStoresByProduct(newValue!.name);
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.map),
+                    label: const Text("View as Map"),
+                    onPressed: () {
+                      if (matchingStores.isNotEmpty) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                ProductMapScreen(stores: matchingStores),
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Please select a product with results first."),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: matchingStores.length,
+                      itemBuilder: (context, index) {
+                        final store = matchingStores[index];
+                        return Card(
+                          child: ListTile(
+                            title: Text(store.name),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.route),
+                              onPressed: () => _showDistanceToStore(store),
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                  );
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Please select a product with results first.")),
-                  );
-                }
-              },
-            ),
-
-            Expanded(
-              child: ListView.builder(
-                itemCount: matchingStores.length,
-                itemBuilder: (context, index) {
-                  final store = matchingStores[index];
-                  return Card(
-                    child: ListTile(
-                      title: Text(store.name),
-                      trailing: IconButton(
-                        icon: Icon(Icons.route),
-                        onPressed: () => _showDistanceToStore(store),
-                      ),
-                    ),
-                  );
-                },
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
+
