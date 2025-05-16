@@ -17,7 +17,7 @@ class _SignupScreenState extends State<SignupScreen> {
   String name = '';
   String? gender;
   String email = '';
-  String level = '';
+  String ?level;
   String password = '';
   String confirmPassword = '';
 
@@ -26,52 +26,106 @@ class _SignupScreenState extends State<SignupScreen> {
   final Color fieldColor = const Color.fromARGB(255, 218, 232, 242);
 
   Future<void> _signup() async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        final response = await _dio.post('/signup/', data: {
-          'name': name,
-          'gender': gender,
-          'email': email,
-          'level': level,
-          'password': password,
-          "confirm_password": confirmPassword,
-        });
+    try {
+      final response = await _dio.post('/signup/', data: {
+        'name': name,
+        'gender': gender,
+        'email': email,
+        'level': level,
+        'password': password,
+        'confirm_password': confirmPassword,
+      });
 
-        if (response.statusCode == 201) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Signup successful!')),
-          );
-          Navigator.pop(context);
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Unexpected error: ${response.statusCode}')),
-          );
-        }
-      } on DioError catch (e) {
-        if (e.response != null && e.response?.data != null) {
-          final errorData = e.response!.data;
-          String errorMessage = 'Signup failed:';
-          if (errorData is Map<String, dynamic>) {
-            errorData.forEach((key, value) {
-              errorMessage += '\n$key: ${value is List ? value.join(', ') : value}';
-            });
-          } else {
-            errorMessage += ' ${e.response!.data.toString()}';
-          }
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(errorMessage)),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Signup failed: Network or server error')),
-          );
-        }
-      } catch (e) {
+      if (response.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Signup failed: ${e.toString()}')),
+          SnackBar(
+            content: Text(
+              'Signup successful!',
+              style: TextStyle(
+                color: primaryColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            backgroundColor: Colors.white,
+          ),
+        );
+
+        Navigator.pop(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Unexpected error: ${response.statusCode}',
+              style: TextStyle(
+                color: primaryColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            backgroundColor: Colors.white,
+          ),
         );
       }
+    } on DioError catch (e) {
+      if (e.response != null && e.response?.data != null) {
+        final errorData = e.response!.data;
+        String errorMessage = 'Signup failed:';
+        if (errorData is Map<String, dynamic>) {
+          errorData.forEach((key, value) {
+            errorMessage += '\n$key: ${value is List ? value.join(', ') : value}';
+          });
+        } else {
+          errorMessage += ' ${e.response!.data.toString()}';
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              errorMessage,
+              style: TextStyle(
+                color: primaryColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            backgroundColor: Colors.white,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Signup failed: Network or server error',
+              style: TextStyle(
+                color: primaryColor,
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            backgroundColor: Colors.white,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Signup failed: ${e.toString()}',
+            style: TextStyle(
+              color: primaryColor,
+              fontWeight: FontWeight.bold,
+              fontSize: 15,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          backgroundColor: Colors.white,
+        ),
+      );
     }
   }
 
@@ -102,9 +156,7 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
             ),
           ),
-          Container(
-            color: Colors.black.withOpacity(0.01),
-          ),
+          Container(color: Colors.black.withOpacity(0.01)),
           Center(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 50),
@@ -116,8 +168,6 @@ class _SignupScreenState extends State<SignupScreen> {
                       icon: Icons.person,
                       hintText: 'Full Name',
                       onChanged: (val) => name = val,
-                      validator: (val) =>
-                          val == null || val.isEmpty ? 'Name is required' : null,
                     ),
                     const SizedBox(height: 12),
                     const Align(
@@ -142,10 +192,6 @@ class _SignupScreenState extends State<SignupScreen> {
                       hintText: 'Email',
                       keyboardType: TextInputType.emailAddress,
                       onChanged: (val) => email = val,
-                      validator: (val) => val != null &&
-                              RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(val)
-                          ? null
-                          : 'Enter a valid email',
                     ),
                     const SizedBox(height: 12),
                     Container(
@@ -155,18 +201,17 @@ class _SignupScreenState extends State<SignupScreen> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: DropdownButtonFormField<String>(
-                          value: level.isNotEmpty ? level : null, // null if no value is selected
-                          decoration: const InputDecoration(
-                            icon: Icon(Icons.school),
-                            border: InputBorder.none,
-                          ),
-                          hint: const Text('Select Level'), // display this when no item is selected
-                          items: ['1', '2', '3', '4']
-                              .map((l) => DropdownMenuItem(value: l, child: Text('Level $l')))
-                              .toList(),
-                          onChanged: (val) => setState(() => level = val ?? ''),
+                        value: (level != null && level!.isNotEmpty) ? level : null,
+                        decoration: const InputDecoration(
+                          icon: Icon(Icons.school),
+                          border: InputBorder.none,
                         ),
-
+                        hint: const Text('Select Level'),
+                        items: ['1', '2', '3', '4']
+                            .map((l) => DropdownMenuItem(value: l, child: Text('Level $l')))
+                            .toList(),
+                        onChanged: (val) => setState(() => level = val ?? ''),
+                      ),
                     ),
                     const SizedBox(height: 12),
                     buildInputField(
@@ -174,10 +219,6 @@ class _SignupScreenState extends State<SignupScreen> {
                       hintText: 'Password',
                       obscureText: true,
                       onChanged: (val) => password = val,
-                      validator: (val) =>
-                          val != null && val.length >= 8
-                              ? null
-                              : 'Password must be at least 8 characters',
                     ),
                     const SizedBox(height: 12),
                     buildInputField(
@@ -185,16 +226,13 @@ class _SignupScreenState extends State<SignupScreen> {
                       hintText: 'Confirm Password',
                       obscureText: true,
                       onChanged: (val) => confirmPassword = val,
-                      validator: (val) =>
-                          val == password ? null : 'Passwords do not match',
                     ),
                     const SizedBox(height: 20),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: primaryColor,
                         padding: const EdgeInsets.symmetric(horizontal: 145, vertical: 15),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       ),
                       onPressed: _signup,
                       child: const Text(
@@ -203,26 +241,22 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                     ),
                     const SizedBox(height: 10),
-
-                      // Login Button
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                      const Text("Already have an account?"),
-                      TextButton (
-                        onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => LoginScreen(),
-                        ),
-                      );
-                  },
-                           child: const Text(
-                             "LOG IN",
-                              style: TextStyle(
-                              color: Color.fromARGB(255, 89, 136, 170), 
-                              fontWeight: FontWeight.bold, 
+                        const Text("Already have an account?"),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => LoginScreen()),
+                            );
+                          },
+                          child: const Text(
+                            "LOG IN",
+                            style: TextStyle(
+                              color: Color.fromARGB(255, 89, 136, 170),
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
@@ -243,7 +277,6 @@ class _SignupScreenState extends State<SignupScreen> {
     required String hintText,
     TextInputType keyboardType = TextInputType.text,
     bool obscureText = false,
-    String? Function(String?)? validator,
     void Function(String)? onChanged,
   }) {
     return Container(
@@ -255,7 +288,6 @@ class _SignupScreenState extends State<SignupScreen> {
       child: TextFormField(
         keyboardType: keyboardType,
         obscureText: obscureText,
-        validator: validator,
         onChanged: onChanged,
         decoration: InputDecoration(
           icon: Icon(icon),
