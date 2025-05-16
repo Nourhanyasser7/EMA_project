@@ -6,6 +6,7 @@ import 'package:mobile_project/screens/product_map_screen.dart';
 import '../models/product.dart';
 import '../models/store.dart';
 import '../services/api_service.dart';
+import 'nav_bar.dart';
 
 class ProductSearchScreen extends StatefulWidget {
   const ProductSearchScreen({super.key});
@@ -199,6 +200,7 @@ class _ProductSearchScreenState extends State<ProductSearchScreen> {
           ),
         ],
       ),
+      bottomNavigationBar: const NavBar(selectedIndex: 2),
     );
   }
 }

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '../models/product.dart';
 import '../services/api_service.dart';
-import '../state_management/ProductManager.dart'; 
+import '../state_management/ProductManager.dart';
+import 'nav_bar.dart'; 
 
 // Screen to display all products grouped by store
 class ProductListScreen extends StatefulWidget {
@@ -128,6 +129,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
           },
         ),
       ),
+      bottomNavigationBar: const NavBar(selectedIndex: 1),
     );
   }
 

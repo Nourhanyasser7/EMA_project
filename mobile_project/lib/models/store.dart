@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 
+//model class for the store
 class Store {
   final int id;
   final String name;
@@ -6,6 +8,7 @@ class Store {
   final double latitude;
   final double longitude;
 
+// Constructor to initialize a Store object
   Store({
     required this.id,
     required this.name,
@@ -14,6 +17,7 @@ class Store {
     required this.longitude,
   });
 
+ // Factory constructor to create a Store object from a Json 
   factory Store.fromJson(Map<String, dynamic> json) {
     return Store(
       id: json['id'],

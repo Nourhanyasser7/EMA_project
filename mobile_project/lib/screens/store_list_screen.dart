@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/store.dart';
 import '../state_management/StoreManager.dart';
+import 'nav_bar.dart';
 import 'product_list_screen.dart';
 
 // A screen to displays a list of stores (restaurants and cafés)
@@ -102,6 +103,7 @@ class _StoreListScreenState extends State<StoreListScreen> {
           },
         ),
       ),
+      bottomNavigationBar: const NavBar(selectedIndex: 0),
     );
   }
 }
